@@ -38,6 +38,10 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'
     }],
+    organizations: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization'
+    }]
 }, {timestamps: true});
 
 export default mongoose.model('User', UserSchema);

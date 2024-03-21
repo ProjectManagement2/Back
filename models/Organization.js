@@ -10,10 +10,6 @@ const OrganizationSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    employees: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }]
 });
 
 export default mongoose.model('Organization', OrganizationSchema);
