@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 
 import {registerValidation} from './validations/auth.js';
 
@@ -17,18 +18,19 @@ mongoose
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 //работа с администратором
-app.post('/admin/auth', AdminController.login);
-app.post('/admin/profile', checkAuth, AdminController.createOrganization);
-app.get('/admin/profile', checkAuth, AdminController.getAllOrganizations);
+app.post('/api/admin/auth', AdminController.login);
+app.post('/api/admin/profile', checkAuth, AdminController.createOrganization);
+app.get('/api/admin/profile', checkAuth, AdminController.getAllOrganizations);
 
 //работа с пользователями
-app.post('/auth/login', UserController.login);
-app.post('/auth/register', registerValidation, UserController.register);
+app.post('/api/auth/login', UserController.login);
+app.post('/api/auth/register', registerValidation, UserController.register);
 
 //работа с проектом
-app.post('/profile/createProject', checkAuth, ProjectController.createProject);
+app.post('/api/profile/createProject', checkAuth, ProjectController.createProject);
 
 app.listen(4444, (err) => {
     if (err) {
