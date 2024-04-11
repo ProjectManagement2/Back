@@ -28,9 +28,10 @@ app.get('/api/admin/profile', checkAuth, AdminController.getAllOrganizations);
 //работа с пользователями
 app.post('/api/auth/login', UserController.login);
 app.post('/api/auth/register', registerValidation, UserController.register);
+app.get('/api/profile/info', checkAuth, UserController.userInfo);
 
 //работа с проектом
-app.post('/api/profile/createProject', checkAuth, ProjectController.createProject);
+// app.post('/api/profile/createProject', checkAuth, ProjectController.createProject);
 
 app.listen(4444, (err) => {
     if (err) {

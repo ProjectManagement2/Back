@@ -5,5 +5,5 @@ export const registerValidation = [
     body('name').isLength({min: 1}),
     body('date').isLength({min: 10}),
     body('email').isEmail(),
-    body('password').isLength({min: 8})
+    body('password').isLength({min: 6})
 ]

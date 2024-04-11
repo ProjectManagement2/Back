@@ -94,3 +94,19 @@ export const login = async (req, res) => {
         });
     }
 }
+
+export const userInfo = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId).select('surname name otch date email');
+
+        return res.json({
+            ...user._doc
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить данные пользователя'
+        });
+    }
+}
