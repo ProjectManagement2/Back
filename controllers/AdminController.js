@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 
 import UserModel from '../models/User.js';
 import OrganizationModel from '../models/Organization.js';
+import PermissionModel from '../models/Permission.js';
 
 export const login = async (req, res) => {
     try {
@@ -71,6 +72,23 @@ export const createOrganization = async (req, res) => {
             leader: leader._doc._id,
         });
         const organization = await doc.save();
+
+        //добавление организации в список пользователя
+        UserModel.findOneAndUpdate(
+            { _id: leader._doc._id }, 
+            { $push: { organizations: organization } }
+        ).exec();
+
+        //добавление пользователю право доступа в организации
+        const doc_permisson = new PermissionModel({
+            organization: organization._doc._id,
+            role: 'OrganizationLeader'
+        });
+        const permisson = await doc_permisson.save();
+        UserModel.findOneAndUpdate(
+            { _id: leader._doc._id }, 
+            { $push: { permissions: permisson } }
+        ).exec();
 
         res.json({
             message: 'Создана новая организация'
