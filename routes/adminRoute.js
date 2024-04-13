@@ -10,11 +10,15 @@ const router = new Router();
 router.post('/auth', AdminController.login);
 
 // создание организации
-// /api/admin/profile
-router.post('/profile', checkAuth, AdminController.createOrganization);
+// /api/admin/createOrganization
+router.post('/createOrganization', checkAuth, AdminController.createOrganization);
 
 // получение списка всех организаций
-// /api/admin/profile
-router.get('/profile', checkAuth, AdminController.getAllOrganizations);
+// /api/admin/getOrganizations
+router.get('/getOrganizations', checkAuth, AdminController.getAllOrganizations);
+
+// получение списка всех пользователей
+// /api/admin/getUsers
+router.get('/getUsers', checkAuth, AdminController.getAllUsers);
 
 export default router;

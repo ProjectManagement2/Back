@@ -82,13 +82,14 @@ export const createOrganization = async (req, res) => {
         //добавление пользователю право доступа в организации
         const doc_permisson = new PermissionModel({
             organization: organization._doc._id,
-            role: 'OrganizationLeader'
+            role: 'OrganizationLeader',
+            user: leader._doc._id,
         });
         const permission = await doc_permisson.save();
-        UserModel.findOneAndUpdate(
-            { _id: leader._doc._id }, 
-            { $push: { permissions: permission } }
-        ).exec();
+        // UserModel.findOneAndUpdate(
+        //     { _id: leader._doc._id }, 
+        //     { $push: { permissions: permission } }
+        // ).exec();
 
         res.json({
             message: 'Создана новая организация'
@@ -111,6 +112,19 @@ export const getAllOrganizations = async (req, res) => {
             select: '_id surname name otch',
             });
         return res.json(organizations);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить данные'
+        });
+    }
+}
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await UserModel.find({}).select('_id surname name otch');
+        return res.json(users);
     }
     catch (err) {
         console.log(err);

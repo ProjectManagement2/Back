@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoute from './routes/authRoute.js';
 import profileRoute from './routes/profileRoute.js';
 import adminRoute from './routes/adminRoute.js';
+import projectRoute from './routes/projectRoute.js';
 
 //подключение к БД
 mongoose
@@ -25,6 +26,9 @@ app.use('/api/profile', profileRoute);
 
 // роут на работу с администратором
 app.use('/api/admin', adminRoute);
+
+// роут на работу с проектом
+app.use('/api/project', projectRoute);
 
 
 app.listen(4444, (err) => {

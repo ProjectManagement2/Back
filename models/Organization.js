@@ -10,6 +10,10 @@ const OrganizationSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    projects: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+    }]
 });
 
 export default mongoose.model('Organization', OrganizationSchema);
