@@ -84,10 +84,10 @@ export const createOrganization = async (req, res) => {
             organization: organization._doc._id,
             role: 'OrganizationLeader'
         });
-        const permisson = await doc_permisson.save();
+        const permission = await doc_permisson.save();
         UserModel.findOneAndUpdate(
             { _id: leader._doc._id }, 
-            { $push: { permissions: permisson } }
+            { $push: { permissions: permission } }
         ).exec();
 
         res.json({
