@@ -2,13 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
-import {registerValidation} from './validations/auth.js';
-
-import * as UserController from './controllers/UserController.js';
-import * as ProjectController from './controllers/ProjectController.js';
-import * as AdminController from './controllers/AdminController.js';
-
-import checkAuth from './utils/checkAuth.js';
+import authRoute from './routes/authRoute.js';
+import profileRoute from './routes/profileRoute.js';
+import adminRoute from './routes/adminRoute.js';
 
 //подключение к БД
 mongoose
@@ -20,18 +16,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-//работа с администратором
-app.post('/api/admin/auth', AdminController.login);
-app.post('/api/admin/profile', checkAuth, AdminController.createOrganization);
-app.get('/api/admin/profile', checkAuth, AdminController.getAllOrganizations);
 
-//работа с пользователями
-app.post('/api/auth/login', UserController.login);
-app.post('/api/auth/register', registerValidation, UserController.register);
-app.get('/api/profile/info', checkAuth, UserController.userInfo);
+// роут на авторизацию
+app.use('/api/auth', authRoute);
 
-//работа с проектом
-// app.post('/api/profile/createProject', checkAuth, ProjectController.createProject);
+// роут на работу с пользователем
+app.use('/api/profile', profileRoute);
+
+// роут на работу с администратором
+app.use('/api/admin', adminRoute);
+
 
 app.listen(4444, (err) => {
     if (err) {
