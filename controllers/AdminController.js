@@ -106,7 +106,7 @@ export const createOrganization = async (req, res) => {
 
 export const getAllOrganizations = async (req, res) => {
     try {
-        const organizations = await OrganizationModel.find({})
+        const organizations = await OrganizationModel.find({}).select('_id name leader')
         .populate({
             path: 'leader',
             select: '_id surname name otch',
