@@ -30,10 +30,10 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    permissions: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Permission'
-    }],
+    // permissions: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Permission'
+    // }],
     tasks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'

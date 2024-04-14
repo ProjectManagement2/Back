@@ -69,6 +69,7 @@ export const createOrganization = async (req, res) => {
         //создание новой записи организации
         const doc = new OrganizationModel({
             name: req.body.name,
+            description: req.body.description,
             leader: leader._doc._id,
         });
         const organization = await doc.save();

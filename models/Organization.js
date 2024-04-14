@@ -5,6 +5,9 @@ const OrganizationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+    },
     leader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
