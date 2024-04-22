@@ -9,4 +9,8 @@ const router = new Router();
 // /api/profile/info
 router.get('/info', checkAuth, UserController.userInfo);
 
+// получение данных об организациях, где состоит пользователь
+// /api/profile/organizations
+router.get('/organizations', checkAuth, UserController.userOrganizations);
+
 export default router;

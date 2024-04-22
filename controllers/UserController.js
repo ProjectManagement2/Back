@@ -110,3 +110,14 @@ export const userInfo = async (req, res) => {
         });
     }
 }
+
+export const userOrganizations = async (req, res) => {
+    const user = await UserModel.findById(req.userId).select('organizations')
+    .populate({
+        path: 'organizations',
+        select: '_id name description',
+        });
+
+    return res.json(user.organizations);
+
+}
