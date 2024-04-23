@@ -121,3 +121,39 @@ export const userOrganizations = async (req, res) => {
     return res.json(user.organizations);
 
 }
+
+export const updateUserInfo = async (req, res) => {
+    try {
+        //проверка валидации
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array);
+        }
+
+        //шифрование пароля
+        const newPassword = req.body.newPassword;
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(newPassword, salt);
+
+        // обновление записи пользователя
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            {_id: req.userId},
+            {
+                surname: req.body.surname,
+                name: req.body.name,
+                otch: req.body.otch,
+                date: req.body.date,
+                email: req.body.email,
+                passwordHash: passwordHash
+            }
+        );
+
+        res.json({message: 'Данные обновлены'});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось обновить данные'
+        });
+    }
+}

@@ -13,4 +13,8 @@ router.get('/info', checkAuth, UserController.userInfo);
 // /api/profile/organizations
 router.get('/organizations', checkAuth, UserController.userOrganizations);
 
+// обновление данных пользователя
+// /api/profile/updateUserInfo
+router.patch('/updateUserInfo', checkAuth, UserController.updateUserInfo);
+
 export default router;

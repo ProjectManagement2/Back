@@ -134,3 +134,22 @@ export const getAllUsers = async (req, res) => {
         });
     }
 }
+
+export const updateOrganization = async (req, res) => {
+    try {
+        const updatedOrganization = await OrganizationModel.findByIdAndUpdate(
+            {_id: req.body.organizationId},
+            {
+                name: req.body.name,
+                description: req.body.description
+            }
+        );
+        res.json({message: 'Данные обновлены'});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось обновить данные'
+        });
+    }
+}

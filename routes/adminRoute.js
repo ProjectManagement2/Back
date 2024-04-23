@@ -21,4 +21,8 @@ router.get('/getOrganizations', checkAuth, AdminController.getAllOrganizations);
 // /api/admin/getUsers
 router.get('/getUsers', checkAuth, AdminController.getAllUsers);
 
+// редактирование организации
+// /api/admin/updateOrganization
+router.patch('/updateOrganization', checkAuth, AdminController.updateOrganization);
+
 export default router;
