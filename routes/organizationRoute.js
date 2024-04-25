@@ -13,4 +13,20 @@ router.get('/mainInfo', checkAuth, OrganizationController.mainInfo);
 // /api/organization/createProject
 router.post('/createProject', checkAuth, OrganizationController.createProject);
 
+// вывод списка проектов организации
+// /api/organization/getProjects
+router.get('/getProjects', checkAuth, OrganizationController.getProjects);
+
+// добавление пользователя в организацию
+// /api/organization/addUser
+router.post('/addUser', checkAuth, OrganizationController.addUser);
+
+// вывод пользователей, которых можно добавить в организацию
+// /api/organization/allUsers
+router.get('/allUsers', checkAuth, OrganizationController.allUsers);
+
+// вывод участников организации
+// /api/organization/getMembers
+router.get('/getMembers', checkAuth, OrganizationController.getMembers);
+
 export default router;
