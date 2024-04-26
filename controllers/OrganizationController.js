@@ -7,13 +7,13 @@ import UserModel from '../models/User.js';
 export const mainInfo = async (req, res) => {
     try {
         // поиск организации, в которой состоит пользователь
-        const organization = await OrganizationModel.findById(req.body.organizationId);
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
             });
         }
-
+        console.log(organization);
         return res.json(organization);
     }
     catch {
@@ -27,7 +27,7 @@ export const mainInfo = async (req, res) => {
 export const createProject = async (req, res) => {
     try {
         // поиск организации, в которой состоит пользователь
-        const organization = await OrganizationModel.findById(req.body.organizationId);
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
@@ -70,7 +70,7 @@ export const createProject = async (req, res) => {
 
 export const getProjects = async (req, res) => {
     // поиск организации
-    const organization = await OrganizationModel.findById(req.body.organizationId).populate({
+    const organization = await OrganizationModel.findById(req.headers.organizationid).populate({
         path: 'projects',
         select: 'name description'
     });;
@@ -96,7 +96,7 @@ export const addUser = async (req, res) => {
         }
 
         // поиск организации
-        const organization = await OrganizationModel.findById(req.body.organizationId);
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
@@ -124,7 +124,7 @@ export const addUser = async (req, res) => {
 export const allUsers = async (req, res) => {
     try {
         // поиск организации
-        const organization = await OrganizationModel.findById(req.body.organizationId);
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
@@ -147,7 +147,7 @@ export const allUsers = async (req, res) => {
 export const getMembers = async (req, res) => {
     try {
         // поиск организации
-        const organization = await OrganizationModel.findById(req.body.organizationId);
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
