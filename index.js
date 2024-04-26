@@ -6,7 +6,7 @@ import authRoute from './routes/authRoute.js';
 import profileRoute from './routes/profileRoute.js';
 import adminRoute from './routes/adminRoute.js';
 import organizationRoute from './routes/organizationRoute.js';
-// import projectRoute from './routes/projectRoute.js';
+import projectRoute from './routes/projectRoute.js';
 
 //подключение к БД
 mongoose
@@ -32,7 +32,7 @@ app.use('/api/admin', adminRoute);
 app.use('/api/organization', organizationRoute);
 
 // роут на работу с проектом
-// app.use('/api/project', projectRoute);
+app.use('/api/project', projectRoute);
 
 
 app.listen(4444, (err) => {

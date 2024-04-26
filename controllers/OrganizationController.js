@@ -13,7 +13,7 @@ export const mainInfo = async (req, res) => {
                 message: 'Организация не найдена'
             });
         }
-        console.log(organization);
+        
         return res.json(organization);
     }
     catch {
