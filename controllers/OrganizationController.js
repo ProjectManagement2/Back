@@ -7,7 +7,12 @@ import UserModel from '../models/User.js';
 export const mainInfo = async (req, res) => {
     try {
         // поиск организации, в которой состоит пользователь
-        const organization = await OrganizationModel.findById(req.headers.organizationid);
+        const organization = await OrganizationModel.findById(req.headers.organizationid).select('name description leader')
+        .populate({
+            path: 'leader',
+            select: 'surname name otch',
+        });
+        
         if (!organization) {
             return res.status(404).json({
                 message: 'Организация не найдена'
@@ -42,6 +47,7 @@ export const createProject = async (req, res) => {
             });
         }
 
+        // создание проекта
         const doc = new ProjectModel({
             name: req.body.name,
             description: req.body.description,
@@ -49,6 +55,28 @@ export const createProject = async (req, res) => {
         });
 
         const project = await doc.save();
+
+        // поиск пользователя по id участника
+        const projectLeader = await UserModel.findById(req.body.projectLeaderId);
+        if (!projectLeader) {
+            return res.status(404).json({
+                message: 'Пользователь не найден'
+            });
+        }
+
+        // добавление нового лидера проекта
+        ProjectModel.findOneAndUpdate(
+            { _id: project._doc._id },
+            { $push: { projectLeaders: projectLeader }}
+        ).exec();
+
+        // добавление права доступа лидеру проекта
+        const doc_permisson = new PermissionModel({
+            project: project._doc._id,
+            role: 'ProjectLeader',
+            user: projectLeader._doc._id,
+        });
+        const new_permission = await doc_permisson.save();
 
         // добавление проекта в список организации
         OrganizationModel.findOneAndUpdate(

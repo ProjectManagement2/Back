@@ -9,19 +9,10 @@ const StageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    startDate: {
-        type: Date,
-        required: true
-    },
-    endDate: Date,
-    project: {
+    tasks: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project'
-    },
-    head: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }
+        ref: 'Task'
+    }],
 });
 
 export default mongoose.model('Stage', StageSchema);

@@ -9,4 +9,20 @@ const router = new Router();
 // /api/project/mainInfo
 router.get('/mainInfo', checkAuth, ProjectController.mainInfo);
 
+// получение списка руководителей проекта
+// /api/project/getProjectLeaders
+router.get('/getProjectLeaders', checkAuth, ProjectController.getProjectLeaders);
+
+// добавление руководителей проекта
+// /api/project/createProjectLeader
+// router.post('/createProjectLeader', checkAuth, ProjectController.createProjectLeader);
+
+// добавление сообщения
+// /api/project/addMessage
+router.post('/addMessage', checkAuth, ProjectController.addMessage);
+
+// вывод всех сообщений
+// /api/project/getMessages
+router.get('/getMessages', checkAuth, ProjectController.getMessages);
+
 export default router;

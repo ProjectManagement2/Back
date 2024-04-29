@@ -26,12 +26,12 @@ export const login = async (req, res) => {
         }
 
         //проверка, является ли пользователь администратором
-        const isAdmin = user._doc.isAdmin;
-        if (isAdmin == false) {
-            return res.status(400).json({
-                message: 'У вас нет прав администратора'
-            })
-        }
+        // const isAdmin = user._doc.isAdmin;
+        // if (isAdmin == false) {
+        //     return res.status(400).json({
+        //         message: 'У вас нет прав администратора'
+        //     })
+        // }
 
         //создание токена
         const token = jwb.sign({

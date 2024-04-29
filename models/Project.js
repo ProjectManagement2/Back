@@ -7,9 +7,17 @@ const ProjectSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    projectLeaders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
     stages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Stage',
+    }],
+    messages: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message',
     }]
 });
 
