@@ -9,6 +9,10 @@ const StageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // isAvailable: {
+    //     type: Boolean,
+    //     required: true
+    // },
     tasks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'

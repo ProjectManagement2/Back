@@ -25,4 +25,16 @@ router.post('/addMessage', checkAuth, ProjectController.addMessage);
 // /api/project/getMessages
 router.get('/getMessages', checkAuth, ProjectController.getMessages);
 
+// создание этапа
+// /api/project/createStage
+router.post('/createStage', checkAuth, ProjectController.createStage);
+
+// получение списка этапов
+// /api/project/getAllStages
+router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
+
+// создание задачи
+// /api/project/createTask
+router.post('/createTask', checkAuth, ProjectController.createTask);
+
 export default router;

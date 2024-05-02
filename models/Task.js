@@ -6,25 +6,24 @@ const TaskSchema = new mongoose.Schema({
         required: true
     },
     description: String,
-    tags: Array,
     deadline: {
         type: Date,
         required: true
     },
-    implementationStatus: String,
-    updateDate: {
-        type: Date,
-        required: true
+    status: {
+        type: String,
+        default: "Новая"
     },
-    stage: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Stage'
+    isImportant: {
+        type: Boolean,
+        default: false
     },
-    workers: [{
+    tags: Array,
+    worker: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }],
-    events: [{
+    },
+    solutions: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event'
     }]
