@@ -84,9 +84,7 @@ export const createProject = async (req, res) => {
             { $push: { projects: project } }
         ).exec();
 
-        return res.json({
-            message: 'Создан новый проект'
-        })
+        return res.json(project._doc._id);
     }
     catch (err) {
         console.log(err);

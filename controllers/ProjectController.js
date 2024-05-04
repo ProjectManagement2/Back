@@ -166,19 +166,19 @@ export const createStage = async (req, res) => {
 export const getAllStages = async (req, res) => {
     try {
         // поиск этапов
-        const stages = await ProjectModel.findById(req.headers.projectid).select('stages')
+        const project = await ProjectModel.findById(req.headers.projectid).select('stages')
         .populate({
             path: 'stages',
             select: 'name description',
         });
 
-        if (!stages) {
+        if (!project) {
             return res.status(404).json({
                 message: 'Этапы не найдены'
             });
         }
 
-        return res.json(stages);
+        return res.json(project.stages);
     }
     catch (err) {
         console.log(err);
