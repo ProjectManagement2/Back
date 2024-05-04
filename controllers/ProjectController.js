@@ -165,7 +165,7 @@ export const createStage = async (req, res) => {
 
 export const getAllStages = async (req, res) => {
     try {
-        // поиск этапов
+        // поиск проекта
         const project = await ProjectModel.findById(req.headers.projectid).select('stages')
         .populate({
             path: 'stages',
@@ -174,7 +174,7 @@ export const getAllStages = async (req, res) => {
 
         if (!project) {
             return res.status(404).json({
-                message: 'Этапы не найдены'
+                message: 'Проект не найден'
             });
         }
 
@@ -244,6 +244,31 @@ export const createTask = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось создать задачу'
+        });
+    }
+}
+
+export const getAllTasks = async (req, res) => {
+    try {
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid).select('tasks')
+        .populate({
+            path: 'tasks',
+            select: 'name status',
+        });
+
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        return res.json(stage.tasks);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить список задач'
         });
     }
 }

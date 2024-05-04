@@ -37,4 +37,8 @@ router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 // /api/project/createTask
 router.post('/createTask', checkAuth, ProjectController.createTask);
 
+// вывод списка задач для одного этапа
+// /api/project/getAllTasks
+router.get('/getAllTasks', checkAuth, ProjectController.getAllTasks);
+
 export default router;
