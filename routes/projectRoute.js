@@ -31,6 +31,10 @@ router.post('/addMessage', checkAuth, ProjectController.addMessage);
 // /api/project/getMessages
 router.get('/getMessages', checkAuth, ProjectController.getMessages);
 
+// удаление всех сообщений
+// /api/project/deleteMessages
+router.delete('/deleteMessages', checkAuth, checkProjLeader, ProjectController.deleteMessages);
+
 // ----------------------------------------------- ЭТАПЫ --------------------------------------------------
 
 // создание этапа

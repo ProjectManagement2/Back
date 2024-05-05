@@ -60,7 +60,6 @@ export const getProjectLeaders = async (req, res) => {
 
 export const addMessage = async (req, res) => {
     try {
-        console.log(req.headers.projectid);
         // поиск чата
         const chat = await ChatModel.findOne({project: req.headers.projectid});
         if (!chat) {
@@ -118,6 +117,36 @@ export const getMessages = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось получить сообщения'
+        });
+    }
+}
+
+export const deleteMessages = async (req, res) => {
+    try {
+        // поиск чата
+        const chat = await ChatModel.findOne({project: req.headers.projectid});
+        if (!chat) {
+            return res.status(404).json({
+                message: 'Чат не найден'
+            });
+        }
+
+        // удаление всех сообщений, связанных с данным чатом
+        await MessageModel.deleteMany({ _id: { $in: chat.messages } });
+
+        // удаление удаленных сообщений из списка чата
+        chat.messages = [];
+        await chat.save();
+
+        res.status(200).json({
+            message: 'Все сообщения удалены успешно'
+        });
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить сообщения'
         });
     }
 }
