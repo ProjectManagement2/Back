@@ -3,7 +3,7 @@ import TaskModel from '../models/Task.js';
 export const taskInfo = async (req, res) => {
     try {
         // поиск задачи
-        const task = await TaskModel.findById(req.headers.taskid).select('name description deadline status isImportant tags worker')
+        const task = await TaskModel.findById(req.headers.taskid).select('name description deadline createdDate status isImportant tags worker')
         .populate({
             path: 'worker',
             select: 'surname name otch'

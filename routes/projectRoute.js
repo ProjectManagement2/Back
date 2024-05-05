@@ -11,6 +11,8 @@ const router = new Router();
 // /api/project/mainInfo
 router.get('/mainInfo', checkAuth, ProjectController.mainInfo);
 
+// ------------------------------------- РУКОВОДИТЕЛИ ПРОЕКТА -----------------------------------------
+
 // получение списка руководителей проекта
 // /api/project/getProjectLeaders
 router.get('/getProjectLeaders', checkAuth, ProjectController.getProjectLeaders);
@@ -18,6 +20,8 @@ router.get('/getProjectLeaders', checkAuth, ProjectController.getProjectLeaders)
 // добавление руководителей проекта
 // /api/project/createProjectLeader
 // router.post('/createProjectLeader', checkAuth, ProjectController.createProjectLeader);
+
+// -------------------------------------------- СООБЩЕНИЯ ------------------------------------------------
 
 // добавление сообщения
 // /api/project/addMessage
@@ -27,6 +31,8 @@ router.post('/addMessage', checkAuth, ProjectController.addMessage);
 // /api/project/getMessages
 router.get('/getMessages', checkAuth, ProjectController.getMessages);
 
+// ----------------------------------------------- ЭТАПЫ --------------------------------------------------
+
 // создание этапа
 // /api/project/createStage
 router.post('/createStage', checkAuth, checkProjLeader, ProjectController.createStage);
@@ -34,6 +40,8 @@ router.post('/createStage', checkAuth, checkProjLeader, ProjectController.create
 // получение списка этапов
 // /api/project/getAllStages
 router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
+
+// ----------------------------------------------- ЗАДАЧИ ---------------------------------------------------
 
 // создание задачи
 // /api/project/createTask

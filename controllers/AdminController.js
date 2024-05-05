@@ -87,10 +87,6 @@ export const createOrganization = async (req, res) => {
             user: leader._doc._id,
         });
         const permission = await doc_permisson.save();
-        // UserModel.findOneAndUpdate(
-        //     { _id: leader._doc._id }, 
-        //     { $push: { permissions: permission } }
-        // ).exec();
 
         res.json({
             message: 'Создана новая организация'

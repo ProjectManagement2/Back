@@ -2,6 +2,7 @@ import ProjectModel from '../models/Project.js'
 import PermissionModel from '../models/Permission.js';
 import OrganizationModel from '../models/Organization.js';
 import UserModel from '../models/User.js';
+import ChatModel from '../models/Chat.js';
 
 
 export const mainInfo = async (req, res) => {
@@ -39,14 +40,6 @@ export const createProject = async (req, res) => {
             });
         }
 
-        // просмотр разрешения на создание проекта
-        // const permission = await PermissionModel.findOne({user: req.userId, organization: organization._doc._id, role: 'OrganizationLeader'});
-        // if (!permission) {
-        //     return res.status(404).json({
-        //         message: 'У вас нет прав на создание проекта'
-        //     });
-        // }
-
         // создание проекта
         const doc = new ProjectModel({
             name: req.body.name,
@@ -83,6 +76,12 @@ export const createProject = async (req, res) => {
             { _id: organization._doc._id }, 
             { $push: { projects: project } }
         ).exec();
+
+        // создание чата проекта
+        const newChatDoc = new ChatModel({
+            project: project._doc._id
+        });
+        const newChat = await newChatDoc.save();
 
         return res.json(project._doc._id);
     }

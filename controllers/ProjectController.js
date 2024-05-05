@@ -5,6 +5,8 @@ import UserModel from '../models/User.js';
 import MessageModel from '../models/Message.js';
 import StageModel from '../models/Stage.js';
 import TaskModel from '../models/Task.js';
+import ChatModel from '../models/Chat.js';
+
 
 export const mainInfo = async (req, res) => {
     try {
@@ -58,11 +60,12 @@ export const getProjectLeaders = async (req, res) => {
 
 export const addMessage = async (req, res) => {
     try {
-        // поиск проекта
-        const project = await ProjectModel.findById(req.headers.projectid);
-        if (!project) {
+        console.log(req.headers.projectid);
+        // поиск чата
+        const chat = await ChatModel.findOne({project: req.headers.projectid});
+        if (!chat) {
             return res.status(404).json({
-                message: 'Проект не найден'
+                message: 'Чат не найден'
             });
         }
 
@@ -73,9 +76,9 @@ export const addMessage = async (req, res) => {
         });
         const message = await doc.save();
 
-        // добавление нового сообщения в проект
-        ProjectModel.findOneAndUpdate(
-            { _id: project._doc._id },
+        // добавление нового сообщения в чат проекта
+        ChatModel.findOneAndUpdate(
+            { _id: chat._doc._id },
             { $push: { messages: message }}
         ).exec();
 
@@ -93,24 +96,23 @@ export const addMessage = async (req, res) => {
 
 export const getMessages = async (req, res) => {
     try {
-        // поиск сообщений
-        const messages = await ProjectModel.findById(req.headers.projectid).select('messages')
+        // поиск чата
+        const chat = await ChatModel.findOne({project: req.headers.projectid}).select('messages')
         .populate({
             path: 'messages',
-            select: 'text author',
+            select: 'text author timestamp',
             populate: {
                 path: 'author',
                 select: 'surname name otch'
             }
         });
-
-        if (!messages) {
+        if (!chat) {
             return res.status(404).json({
-                message: 'Сообщения не найдены'
+                message: 'Чат не найден'
             });
         }
 
-        return res.json(messages);
+        return res.json(chat.messages);
     }
     catch (err) {
         console.log(err);
@@ -129,14 +131,6 @@ export const createStage = async (req, res) => {
                 message: 'Проект не найден'
             });
         }
-
-        // проверка прав доступа на создание этапа
-        // const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
-        // if (!permission) {
-        //     return res.status(404).json({
-        //         message: 'У вас нет прав на создание этапа'
-        //     });
-        // }
 
         // создание этапа
         const doc = new StageModel({

@@ -11,6 +11,8 @@ const router = new Router();
 //  /api/organization/mainInfo
 router.get('/mainInfo', checkAuth, OrganizationController.mainInfo);
 
+// ------------------------------------------ ПРОЕКТЫ ---------------------------------------------------
+
 // создание проекта
 // /api/organization/createProject
 router.post('/createProject', checkAuth, checkOrgLeader, OrganizationController.createProject);
@@ -18,6 +20,8 @@ router.post('/createProject', checkAuth, checkOrgLeader, OrganizationController.
 // вывод списка проектов организации
 // /api/organization/getProjects
 router.get('/getProjects', checkAuth, OrganizationController.getProjects);
+
+// --------------------------------------- УЧАСТНИКИ ОРГАНИЗАЦИИ -----------------------------------------
 
 // добавление пользователя в организацию
 // /api/organization/addUser
