@@ -40,12 +40,12 @@ export const createProject = async (req, res) => {
         }
 
         // просмотр разрешения на создание проекта
-        const permission = await PermissionModel.findOne({user: req.userId, organization: organization._doc._id, role: 'OrganizationLeader'});
-        if (!permission) {
-            return res.status(404).json({
-                message: 'У вас нет прав на создание проекта'
-            });
-        }
+        // const permission = await PermissionModel.findOne({user: req.userId, organization: organization._doc._id, role: 'OrganizationLeader'});
+        // if (!permission) {
+        //     return res.status(404).json({
+        //         message: 'У вас нет прав на создание проекта'
+        //     });
+        // }
 
         // создание проекта
         const doc = new ProjectModel({

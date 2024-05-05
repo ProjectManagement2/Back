@@ -10,6 +10,8 @@ const router = new Router();
 // /api/task/taskInfo
 router.get('/taskInfo', checkAuth, TaskController.taskInfo);
 
-
+// изменение статуса задачи
+// /api/task/changeStatus
+router.patch('/changeStatus', checkAuth, TaskController.changeStatus);
 
 export default router;

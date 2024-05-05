@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 import * as ProjectController from '../controllers/ProjectController.js';
+
 import checkAuth from '../utils/checkAuth.js';
+import checkProjLeader from "../utils/checkProjLeader.js";
 
 const router = new Router();
 
@@ -27,7 +29,7 @@ router.get('/getMessages', checkAuth, ProjectController.getMessages);
 
 // создание этапа
 // /api/project/createStage
-router.post('/createStage', checkAuth, ProjectController.createStage);
+router.post('/createStage', checkAuth, checkProjLeader, ProjectController.createStage);
 
 // получение списка этапов
 // /api/project/getAllStages
@@ -35,7 +37,7 @@ router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 
 // создание задачи
 // /api/project/createTask
-router.post('/createTask', checkAuth, ProjectController.createTask);
+router.post('/createTask', checkAuth, checkProjLeader, ProjectController.createTask);
 
 // вывод списка задач для одного этапа
 // /api/project/getAllTasks

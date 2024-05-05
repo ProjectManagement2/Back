@@ -131,12 +131,12 @@ export const createStage = async (req, res) => {
         }
 
         // проверка прав доступа на создание этапа
-        const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
-        if (!permission) {
-            return res.status(404).json({
-                message: 'У вас нет прав на создание этапа'
-            });
-        }
+        // const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
+        // if (!permission) {
+        //     return res.status(404).json({
+        //         message: 'У вас нет прав на создание этапа'
+        //     });
+        // }
 
         // создание этапа
         const doc = new StageModel({
@@ -206,12 +206,12 @@ export const createTask = async (req, res) => {
         }
 
         // проверка прав доступа лидера проекта
-        const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
-        if (!permission) {
-            return res.status(404).json({
-                message: 'У вас нет прав на создание этапа'
-            });
-        }
+        // const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
+        // if (!permission) {
+        //     return res.status(404).json({
+        //         message: 'У вас нет прав на создание этапа'
+        //     });
+        // }
 
         // создание задачи
         const doc = new TaskModel({

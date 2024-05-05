@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 import * as OrganizationController from '../controllers/OrganizationController.js';
+
 import checkAuth from '../utils/checkAuth.js';
+import checkOrgLeader from '../utils/checkOrgLeader.js';
 
 const router = new Router();
 
@@ -11,7 +13,7 @@ router.get('/mainInfo', checkAuth, OrganizationController.mainInfo);
 
 // создание проекта
 // /api/organization/createProject
-router.post('/createProject', checkAuth, OrganizationController.createProject);
+router.post('/createProject', checkAuth, checkOrgLeader, OrganizationController.createProject);
 
 // вывод списка проектов организации
 // /api/organization/getProjects
@@ -19,7 +21,7 @@ router.get('/getProjects', checkAuth, OrganizationController.getProjects);
 
 // добавление пользователя в организацию
 // /api/organization/addUser
-router.post('/addUser', checkAuth, OrganizationController.addUser);
+router.post('/addUser', checkAuth, checkOrgLeader, OrganizationController.addUser);
 
 // вывод пользователей, которых можно добавить в организацию
 // /api/organization/allUsers
