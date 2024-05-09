@@ -29,7 +29,7 @@ const TaskSchema = new mongoose.Schema({
     },
     solutions: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Event'
+        ref: 'Solution'
     }]
 });
 

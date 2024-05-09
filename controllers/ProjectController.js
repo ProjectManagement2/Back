@@ -36,24 +36,101 @@ export const mainInfo = async (req, res) => {
 export const getProjectLeaders = async (req, res) => {
     try {
         // поиск проекта
-        const projectLeaders = await ProjectModel.findById(req.headers.projectid).select('projectLeaders')
+        const project = await ProjectModel.findById(req.headers.projectid).select('projectLeaders')
         .populate({
             path: 'projectLeaders',
             select: 'surname name otch email',
         });
 
-        if (!projectLeaders) {
+        if (!project) {
             return res.status(404).json({
                 message: 'Проект не найден'
             });
         }
 
-        return res.json(projectLeaders);
+        return res.json(project.projectLeaders);
     }
     catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось получить информацию о руководителях проекта'
+        });
+    }
+}
+
+export const membersForLeader = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // поиск организации
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
+        if (!organization) {
+            return res.status(404).json({
+                message: 'Организация не найдена'
+            });
+        };
+
+        // поиск участников организации, которых можно назначить руководителями проекта
+        const users = await UserModel.find({ organizations: organization, _id: {$nin: project.projectLeaders} })
+        .select('_id surname name otch');
+
+        return res.json(users);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить список участников'
+        });
+    }
+}
+
+export const addProjectLeader = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // поиск пользователя
+        const projectLeader = await UserModel.findById(req.body.newLeaderId);
+        if (!projectLeader) {
+            return res.status(404).json({
+                message: 'Пользователь не найден'
+            });
+        }
+
+        // добавление нового лидера проекта
+        ProjectModel.findOneAndUpdate(
+            { _id: project._doc._id },
+            { $push: { projectLeaders: projectLeader }}
+        ).exec();
+
+        // добавление права доступа лидеру проекта
+        const doc_permisson = new PermissionModel({
+            project: project._doc._id,
+            role: 'ProjectLeader',
+            user: projectLeader._doc._id,
+        });
+        const new_permission = await doc_permisson.save();
+
+        return res.json({
+            message: 'Добавлен новый лидер'
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось добавить руководителя проекта'
         });
     }
 }

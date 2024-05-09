@@ -17,9 +17,13 @@ router.get('/mainInfo', checkAuth, ProjectController.mainInfo);
 // /api/project/getProjectLeaders
 router.get('/getProjectLeaders', checkAuth, ProjectController.getProjectLeaders);
 
+// получение списка участников, которых можно сделать руководителями проекта
+// /api/project/membersForLeader
+router.get('/membersForLeader', checkAuth, ProjectController.membersForLeader);
+
 // добавление руководителей проекта
-// /api/project/createProjectLeader
-// router.post('/createProjectLeader', checkAuth, ProjectController.createProjectLeader);
+// /api/project/addProjectLeader
+router.patch('/addProjectLeader', checkAuth, checkProjLeader, ProjectController.addProjectLeader);
 
 // -------------------------------------------- СООБЩЕНИЯ ------------------------------------------------
 

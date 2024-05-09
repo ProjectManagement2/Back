@@ -1,4 +1,5 @@
 import TaskModel from '../models/Task.js';
+import SolutionModel from '../models/Solution.js';
 
 export const taskInfo = async (req, res) => {
     try {
@@ -52,6 +53,73 @@ export const changeStatus = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось изменить статус'
+        });
+    }
+}
+
+export const createSolution = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid);
+
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        // проверка права на добавление задачи
+        if (task._doc.worker != req.userId) {
+            return res.status(404).json({
+                message: 'Вы не можете добавить решение к задаче'
+            });
+        }
+
+        // добавление решения
+        const doc = new SolutionModel({
+            text: req.body.text
+        });
+        const solution = await doc.save();
+
+        // добавление нового решения к задаче
+        TaskModel.findOneAndUpdate(
+            { _id: task._doc._id },
+            { $push: { solutions: solution }}
+        ).exec();
+
+        res.json({
+            message: "Добавлено решение задачи"
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось добавить решение задачи'
+        });
+    }
+}
+
+export const getAllSolutions = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid).select('solutions')
+        .populate({
+            path: 'solutions',
+            select: 'text createdDate'
+        });
+
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        return res.json(task.solutions);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось вывести решения задачи'
         });
     }
 }
