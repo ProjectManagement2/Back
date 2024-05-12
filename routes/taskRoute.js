@@ -7,7 +7,7 @@ const router = new Router();
 
 // --------------------------------------------- ЗАДАЧИ -----------------------------------------------
 
-// получение информации о задаче
+// получение информации о задаче и решении
 // /api/task/taskInfo
 router.get('/taskInfo', checkAuth, TaskController.taskInfo);
 
@@ -17,12 +17,10 @@ router.patch('/changeStatus', checkAuth, TaskController.changeStatus);
 
 // --------------------------------------------- РЕШЕНИЯ -----------------------------------------------
 
-// добавление решения задачи
+// обновление решения задачи
 // /api/task/createSolution
-router.post('/createSolution', checkAuth, TaskController.createSolution);
+router.patch('/updateSolution', checkAuth, TaskController.updateSolution);
 
-// вывод всех решений задачи
-// /api/task/getAllSolutions
-router.get('/getAllSolutions', checkAuth, TaskController.getAllSolutions);
+
 
 export default router;

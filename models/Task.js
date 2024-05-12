@@ -27,10 +27,19 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    solutions: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Solution'
-    }]
+    solution: {
+        text: {
+            type: String,
+            default: ''
+        },
+        // file: {
+        //     type: String,
+        // },
+        createdDate: {
+            type: Date,
+            default: Date.now
+        },
+    }
 });
 
 export default mongoose.model('Task', TaskSchema);

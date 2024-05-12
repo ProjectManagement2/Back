@@ -55,6 +55,10 @@ router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 // /api/project/createTask
 router.post('/createTask', checkAuth, checkProjLeader, ProjectController.createTask);
 
+// удаление задачи
+// /api/project/deleteTask
+router.delete('/deleteTask', checkAuth, checkProjLeader, ProjectController.deleteTask);
+
 // вывод списка задач для одного этапа
 // /api/project/getAllTasks
 router.get('/getAllTasks', checkAuth, ProjectController.getAllTasks);

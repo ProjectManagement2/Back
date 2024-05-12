@@ -320,7 +320,7 @@ export const createTask = async (req, res) => {
             deadline: req.body.deadline,
             isImportant: req.body.isImportant,
             tags: req.body.tags,
-            worker: req.body.worker
+            worker: req.body.worker,
         });
         const task = await doc.save();
 
@@ -344,6 +344,54 @@ export const createTask = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось создать задачу'
+        });
+    }
+}
+
+export const deleteTask = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid);
+
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        // этап, к которому принадлежит удаляемая задача
+        const stage = await StageModel.findOne({ tasks: req.headers.taskid });
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+        // удалить ID задачи из массива задач этапа
+        stage.tasks.pull(req.headers.taskid);
+        await stage.save();
+
+        // исполнитель, который выполняет задачу
+        const worker = await UserModel.findById(task._doc.worker);
+        if (!worker) {
+            return res.status(404).json({
+                message: 'Исполнитель не найден'
+            });
+        }
+        // удалить ID задачи из массива задач исполнителя
+        worker.tasks.pull(req.headers.taskid);
+        await worker.save();
+
+        // удаление самой задачи
+        await TaskModel.deleteOne({ _id: task._doc._id });
+
+        res.json({
+            message: "Задача удалена"
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить задачу'
         });
     }
 }
