@@ -304,14 +304,14 @@ export const createTask = async (req, res) => {
                 message: 'Проект не найден'
             });
         }
-
-        // проверка прав доступа лидера проекта
-        // const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
-        // if (!permission) {
-        //     return res.status(404).json({
-        //         message: 'У вас нет прав на создание этапа'
-        //     });
-        // }
+        
+        // проверка наличия файлов и сохранение их имен или путей
+        let filesArray = [];
+        if (req.files && req.files.length > 0) {
+            req.files.forEach(file => {
+                filesArray.push(file.filename); // имя файла или путь к файлу
+            });
+        }
 
         // создание задачи
         const doc = new TaskModel({
@@ -321,6 +321,7 @@ export const createTask = async (req, res) => {
             isImportant: req.body.isImportant,
             tags: req.body.tags,
             worker: req.body.worker,
+            files: filesArray // Сохраняем имена или пути к файлам
         });
         const task = await doc.save();
 

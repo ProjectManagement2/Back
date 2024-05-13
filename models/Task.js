@@ -27,6 +27,9 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    files: [{
+        type: String,
+    }],
     solution: {
         text: {
             type: String,

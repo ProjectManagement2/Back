@@ -1,9 +1,23 @@
 import { Router } from "express";
+import multer from "multer";
 
 import * as ProjectController from '../controllers/ProjectController.js';
 
 import checkAuth from '../utils/checkAuth.js';
 import checkProjLeader from "../utils/checkProjLeader.js";
+
+
+// настройка multer для сохранения файлов в определенную директорию
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // путь к директории, куда будут сохраняться файлы
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname); // уникальное имя файла (текущее время + оригинальное имя файла)
+    }
+});
+const upload = multer({ storage: storage });
+
 
 const router = new Router();
 
@@ -53,7 +67,7 @@ router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 
 // создание задачи
 // /api/project/createTask
-router.post('/createTask', checkAuth, checkProjLeader, ProjectController.createTask);
+router.post('/createTask', checkAuth, checkProjLeader, upload.array('files'), ProjectController.createTask);
 
 // удаление задачи
 // /api/project/deleteTask
