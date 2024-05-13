@@ -35,9 +35,9 @@ const TaskSchema = new mongoose.Schema({
             type: String,
             default: ''
         },
-        // file: {
-        //     type: String,
-        // },
+        files: [{
+            type: String,
+        }],
         createdDate: {
             type: Date,
             default: Date.now
