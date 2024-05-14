@@ -19,6 +19,7 @@ export const taskInfo = async (req, res) => {
 
         // получение информации о файлах, прикрепленных к задаче
         const taskFiles = task.files.map(file => ({
+            path: `uploads/${file}`,
             filename: file,
         }));
 

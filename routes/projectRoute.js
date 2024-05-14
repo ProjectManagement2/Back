@@ -77,4 +77,8 @@ router.delete('/deleteTask', checkAuth, checkProjLeader, ProjectController.delet
 // /api/project/getAllTasks
 router.get('/getAllTasks', checkAuth, ProjectController.getAllTasks);
 
+// вывод задач для календаря
+// /api/project/getCalendarTasks
+router.get('/getCalendarTasks', checkAuth, ProjectController.getCalendarTasks);
+
 export default router;

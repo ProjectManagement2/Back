@@ -421,3 +421,39 @@ export const getAllTasks = async (req, res) => {
         });
     }
 }
+
+export const getCalendarTasks = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // Получить список этапов проекта
+        const stages = await StageModel.find({ _id: { $in: project.stages } }).exec();
+
+        // Создать пустой массив для задач
+        let allTasks = [];
+
+        // Для каждого этапа получить список задач и добавить их в общий список
+        for (const stage of stages) {
+            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name deadline createdDate worker')
+            .populate({
+                path: 'worker',
+                select: 'surname name otch'
+            }).exec();
+            allTasks = allTasks.concat(tasks);
+        }
+
+        return res.json(allTasks);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить список задач для календаря'
+        });
+    }
+}

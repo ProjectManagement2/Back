@@ -14,11 +14,7 @@ const ProjectSchema = new mongoose.Schema({
     stages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Stage',
-    }],
-    // messages: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Message',
-    // }]
+    }]
 });
 
 export default mongoose.model("Project", ProjectSchema);
