@@ -12,11 +12,11 @@ export default async (req, res, next) => {
         });
     }
 
-    // просмотр разрешения на создание проекта
+    // просмотр разрешения
     const permission = await PermissionModel.findOne({user: req.userId, organization: organization._doc._id, role: 'OrganizationLeader'});
     if (!permission) {
         return res.status(404).json({
-            message: 'У вас нет прав на создание проекта'
+            message: 'У вас нет прав доступа лидера организации'
         });
     }
 

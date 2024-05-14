@@ -12,11 +12,11 @@ export default async (req, res, next) => {
         });
     }
 
-    // проверка прав доступа на создание этапа
+    // проверка прав доступа
     const permission = await PermissionModel.findOne({user: req.userId, project: project._doc._id, role: 'ProjectLeader'});
     if (!permission) {
         return res.status(404).json({
-            message: 'У вас нет прав на создание этапа'
+            message: 'У вас нет прав доступа лидера проекта'
         });
     }
 

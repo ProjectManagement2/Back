@@ -89,7 +89,7 @@ export const updateSolution = async (req, res) => {
             });
         }
 
-        // проверка права на добавление задачи
+        // проверка права на добавление решения
         if (task._doc.worker != req.userId) {
             return res.status(404).json({
                 message: 'Вы не можете добавить решение к задаче'
