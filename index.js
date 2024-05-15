@@ -2,6 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import authRoute from './routes/authRoute.js';
 import profileRoute from './routes/profileRoute.js';
 import adminRoute from './routes/adminRoute.js';
@@ -20,6 +23,26 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// создание переменных __filename и __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+// маршрут для скачивания файлов
+app.get('/download/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '/uploads', filename);
+
+    res.download(filePath, (err) => {
+      if (err) {
+        console.error('Error downloading file:', err);
+        res.status(500).send('Error downloading file');
+      }
+    });
+  });
+
 
 // роут на авторизацию
 app.use('/api/auth', authRoute);
