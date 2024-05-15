@@ -17,4 +17,8 @@ router.get('/organizations', checkAuth, UserController.userOrganizations);
 // /api/profile/updateUserInfo
 router.patch('/updateUserInfo', checkAuth, UserController.updateUserInfo);
 
+// вывод задач пользователя для канбан доски
+// /api/profile/userTasks
+router.get('/userTasks', checkAuth, UserController.userTasks);
+
 export default router;

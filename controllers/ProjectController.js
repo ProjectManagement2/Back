@@ -321,6 +321,7 @@ export const createTask = async (req, res) => {
             isImportant: req.body.isImportant,
             tags: req.body.tags,
             worker: req.body.worker,
+            project: project._doc._id,
             files: filesArray // Сохраняем имена или пути к файлам
         });
         const task = await doc.save();
@@ -432,13 +433,12 @@ export const getCalendarTasks = async (req, res) => {
             });
         }
 
-        // Получить список этапов проекта
+        // список этапов проекта
         const stages = await StageModel.find({ _id: { $in: project.stages } }).exec();
 
-        // Создать пустой массив для задач
         let allTasks = [];
 
-        // Для каждого этапа получить список задач и добавить их в общий список
+        // для каждого этапа получить список задач и добавить их в общий список
         for (const stage of stages) {
             const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name deadline createdDate worker')
             .populate({

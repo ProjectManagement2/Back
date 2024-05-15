@@ -58,6 +58,13 @@ export const changeStatus = async (req, res) => {
             });
         }
 
+        // проверка права на обновление статуса задачи
+        if (task._doc.worker != req.userId) {
+            return res.status(404).json({
+                message: 'Вы не можете обновить статус задачи'
+            });
+        }
+
         // обновление статуса задачи
         const updatedTask = await TaskModel.findByIdAndUpdate(
             {_id: task._doc._id},

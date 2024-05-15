@@ -157,3 +157,34 @@ export const updateUserInfo = async (req, res) => {
         });
     }
 }
+
+export const userTasks = async (req, res) => {
+    try {
+        // поиск пользователя
+        const user = await UserModel.findById(req.userId)
+        .populate({
+            path: 'tasks',
+            select: 'name description deadline isImportant status tags project',
+            populate: {
+                path: 'project',
+                select: 'name'
+            }
+        });
+        if (!user) {
+            return res.status(404).json({
+                message: 'Пользователь не найден'
+            });
+        }
+
+        // получить список задач пользователя
+        const tasks = user.tasks;
+
+        return res.json(tasks);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить список задач пользователя'
+        }); 
+    }
+}
