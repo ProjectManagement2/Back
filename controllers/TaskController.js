@@ -1,5 +1,7 @@
 import TaskModel from '../models/Task.js';
 import SolutionModel from '../models/Solution.js';
+import ChatModel from '../models/Chat.js';
+import MessageModel from '../models/Message.js';
 
 export const taskInfo = async (req, res) => {
     try {
@@ -25,6 +27,7 @@ export const taskInfo = async (req, res) => {
 
         // получение информации о файлах, прикрепленных к решению
         const solutionFiles = task.solution.files.map(file => ({
+            path: `uploads/${file}`,
             filename: file,
         }));
 
@@ -117,10 +120,32 @@ export const updateSolution = async (req, res) => {
             {
                 solution: {
                     text: req.body.text,
-                    files: filesArray // Сохраняем имена или пути к файлам
+                    files: filesArray // сохраняем имена или пути к файлам
                 }
             }
         );
+
+        // создание уведомления в чат проекта
+        // поиск чата
+        const chat = await ChatModel.findOne({project: task._doc.project});
+        if (!chat) {
+            return res.status(404).json({
+                message: 'Чат не найден'
+            });
+        }
+
+        // создание сообщения
+        const doc = new MessageModel({
+            text: 'Обновлен отчет по задаче: ' + task._doc.name,
+            author: req.userId,
+        });
+        const message = await doc.save();
+
+        // добавление нового сообщения в чат проекта
+        ChatModel.findOneAndUpdate(
+            { _id: chat._doc._id },
+            { $push: { messages: message }}
+        ).exec();
 
         res.json({
             message: "Обновлено решение задачи"

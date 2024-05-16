@@ -10,20 +10,58 @@ import ChatModel from '../models/Chat.js';
 
 export const mainInfo = async (req, res) => {
     try {
-        // поиск проекта
-        const project = await ProjectModel.findById(req.headers.projectid).select('name description initiator')
+        // поиск проекта с задачами
+        const project = await ProjectModel.findById(req.headers.projectid)
+        .select('stages')
         .populate({
-            path: 'initiator',
-            select: 'surname name otch',
+            path: 'stages',
+            populate: {
+                path: 'tasks',
+                select: 'status',
+            },
         });
-
+    
         if (!project) {
             return res.status(404).json({
                 message: 'Проект не найден'
             });
         }
-        
-        return res.json(project);
+    
+        // Initialize task status counters
+        const taskStatusCount = {
+            statusNew: 0,
+            statusInProcess: 0,
+            statusDone: 0,
+        };
+    
+        // Iterate over stages and tasks to count the statuses
+        project.stages.forEach(stage => {
+            stage.tasks.forEach(task => {
+                if (task.status === 'Новая') {
+                    taskStatusCount.statusNew++;
+                } else if (task.status === 'Выполняется') {
+                    taskStatusCount.statusInProcess++;
+                } else if (task.status === 'Сделана') {
+                    taskStatusCount.statusDone++;
+                }
+            });
+        });
+
+        // поиск основной информации о проекте
+        const projectMainInfo = await ProjectModel.findById(req.headers.projectid)
+        .select('name description initiator')
+        .populate({
+            path: 'initiator',
+            select: 'surname name otch',
+        })
+    
+        // Include task status count in the response
+        const response = {
+            ...projectMainInfo.toObject(),
+            taskStatusCount,
+        };
+    
+            return res.json(response);
     }
     catch (err) {
         console.log(err);
