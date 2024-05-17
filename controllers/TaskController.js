@@ -90,7 +90,6 @@ export const changeStatus = async (req, res) => {
 
 export const updateSolution = async (req, res) => {
     try {
-        console.log(req.body);
         // поиск задачи
         const task = await TaskModel.findById(req.headers.taskid);
 

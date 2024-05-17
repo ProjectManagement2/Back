@@ -59,7 +59,7 @@ export const mainInfo = async (req, res) => {
             taskStatusCount,
         };
     
-            return res.json(response);
+        return res.json(response);
     }
     catch (err) {
         console.log(err);
@@ -494,3 +494,137 @@ export const getCalendarTasks = async (req, res) => {
         });
     }
 }
+
+export const statistics = async (req, res) => {
+    try {
+        // поиск проекта с задачами
+        const project = await ProjectModel.findById(req.headers.projectid)
+        .select('stages')
+        .populate({
+            path: 'stages',
+            populate: {
+                path: 'tasks',
+                select: 'status worker deadline createdDate startDate solution isImportant tags files',
+                populate: {
+                    path: 'solution',
+                    select: 'createdDate'
+                }
+            },
+        });
+
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // сбор статистики по задачам
+        const taskStatusCount = {
+            statusNew: 0,
+            statusInProcess: 0,
+            statusDone: 0,
+        };
+
+        let totalTasks = 0;
+        let totalTaskTime = 0;
+        let overdueTasks = 0;
+        let importantTasksCount = 0;
+        let totalFilesCount = 0;
+        const tasksByDeadlineRange = {
+            lessThan1Day: 0,
+            from1To3Days: 0,
+            moreThan3Days: 0,
+        };
+        const tagCounts = {};
+        const employeeTasks = {};
+        const employeeIds = new Set();
+
+        project.stages.forEach(stage => {
+            stage.tasks.forEach(task => {
+                totalTasks++;
+
+                // Подсчет задач по статусам
+                if (task.status === 'Новая') {
+                    taskStatusCount.statusNew++;
+                } else if (task.status === 'Выполняется') {
+                    taskStatusCount.statusInProcess++;
+                } else if (task.status === 'Завершена') {
+                    taskStatusCount.statusDone++;
+                }
+
+                // Подсчет важных задач
+                if (task.isImportant) {
+                    importantTasksCount++;
+                }
+
+                // Подсчет времени выполнения задач
+                if (task.solution && task.solution.createdDate && task.createdDate) {
+                    const taskTime = new Date(task.solution.createdDate) - new Date(task.createdDate);
+                    totalTaskTime += taskTime;
+
+                    // Подсчет просроченных задач
+                    if (task.deadline && new Date(task.solution.createdDate) > new Date(task.deadline)) {
+                        overdueTasks++;
+                    }
+                }
+
+                // Подсчет задач по срокам выполнения
+                const timeLeft = (new Date(task.deadline) - new Date(task.startDate)) / (1000 * 60 * 60 * 24); // дни
+                if (timeLeft < 1) {
+                    tasksByDeadlineRange.lessThan1Day++;
+                } else if (timeLeft <= 3) {
+                    tasksByDeadlineRange.from1To3Days++;
+                } else {
+                    tasksByDeadlineRange.moreThan3Days++;
+                }
+
+                // Подсчет задач по сотрудникам
+                if (task.worker) {
+                    employeeIds.add(task.worker.toString());
+                    if (!employeeTasks[task.worker]) {
+                        employeeTasks[task.worker] = 0;
+                    }
+                    employeeTasks[task.worker]++;
+                }
+            });
+        });
+
+        // Загрузка данных о сотрудниках
+        const employees = await UserModel.find({ _id: { $in: Array.from(employeeIds) } })
+            .select('surname name otch');
+
+        // Создание мапы для быстрого поиска ФИО сотрудника по его ID
+        const employeeMap = {};
+        employees.forEach(employee => {
+            employeeMap[employee._id] = `${employee.surname} ${employee.name} ${employee.otch}`;
+        });
+
+        // Преобразование employeeTasks с ID на ФИО
+        const employeeTasksWithNames = {};
+        for (const [id, count] of Object.entries(employeeTasks)) {
+            employeeTasksWithNames[employeeMap[id]] = count;
+        }
+
+        const averageTaskTimeMs = totalTasks > 0 ? totalTaskTime / totalTasks : 0;
+        const averageTaskTimeHours = averageTaskTimeMs / (1000 * 60 * 60);
+
+        const response = {
+            stagesCount: project.stages.length,
+            tasksCount: totalTasks,
+            taskStatusCount,
+            overdueTasks,
+            importantTasksCount,
+            tasksByDeadlineRange,
+            employeeTasks: employeeTasksWithNames,
+        };
+
+        return res.json(response);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить статистику по проекту'
+        });
+    }
+}
+
+

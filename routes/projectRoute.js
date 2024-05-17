@@ -81,4 +81,10 @@ router.get('/getAllTasks', checkAuth, ProjectController.getAllTasks);
 // /api/project/getCalendarTasks
 router.get('/getCalendarTasks', checkAuth, ProjectController.getCalendarTasks);
 
+// ----------------------------------------------- СТАТИСТИКА ---------------------------------------------------
+
+// вывод статистики по проекту
+// /api/project/statistics
+router.get('/statistics', checkAuth, ProjectController.statistics);
+
 export default router;
