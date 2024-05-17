@@ -32,7 +32,7 @@ router.patch('/changeStatus', checkAuth, TaskController.changeStatus);
 // --------------------------------------------- РЕШЕНИЯ -----------------------------------------------
 
 // обновление решения задачи
-// /api/task/createSolution
+// /api/task/updateSolution
 router.patch('/updateSolution', checkAuth, upload.array('files'), TaskController.updateSolution);
 
 export default router;

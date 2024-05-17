@@ -27,21 +27,20 @@ export const mainInfo = async (req, res) => {
             });
         }
     
-        // Initialize task status counters
+        // сбор статистики по задачам
         const taskStatusCount = {
             statusNew: 0,
             statusInProcess: 0,
             statusDone: 0,
         };
     
-        // Iterate over stages and tasks to count the statuses
         project.stages.forEach(stage => {
             stage.tasks.forEach(task => {
                 if (task.status === 'Новая') {
                     taskStatusCount.statusNew++;
                 } else if (task.status === 'Выполняется') {
                     taskStatusCount.statusInProcess++;
-                } else if (task.status === 'Сделана') {
+                } else if (task.status === 'Завершена') {
                     taskStatusCount.statusDone++;
                 }
             });
@@ -55,7 +54,6 @@ export const mainInfo = async (req, res) => {
             select: 'surname name otch',
         })
     
-        // Include task status count in the response
         const response = {
             ...projectMainInfo.toObject(),
             taskStatusCount,
@@ -355,6 +353,7 @@ export const createTask = async (req, res) => {
         const doc = new TaskModel({
             name: req.body.name,
             description: req.body.description,
+            startDate: req.body.startDate,
             deadline: req.body.deadline,
             isImportant: req.body.isImportant,
             tags: req.body.tags,
@@ -478,7 +477,7 @@ export const getCalendarTasks = async (req, res) => {
 
         // для каждого этапа получить список задач и добавить их в общий список
         for (const stage of stages) {
-            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name deadline createdDate worker')
+            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate worker')
             .populate({
                 path: 'worker',
                 select: 'surname name otch'
