@@ -274,10 +274,20 @@ export const createStage = async (req, res) => {
             });
         }
 
+        // проверка даты: дата начала < дата конца
+        const { startDate, endDate } = req.body;
+        if (new Date(startDate) >= new Date(endDate)) {
+            return res.status(400).json({
+                message: 'Дата начала должна быть меньше даты дедлайна'
+            });
+        }
+
         // создание этапа
         const doc = new StageModel({
             name: req.body.name,
             description: req.body.description,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate
         });
         const stage = await doc.save();
 
@@ -346,6 +356,21 @@ export const createTask = async (req, res) => {
         if (req.files && req.files.length > 0) {
             req.files.forEach(file => {
                 filesArray.push(file.filename); // имя файла или путь к файлу
+            });
+        }
+
+        // проверка даты: дата начала < дата конца
+        const { startDate, deadline } = req.body;
+        if (new Date(startDate) >= new Date(deadline)) {
+            return res.status(400).json({
+                message: 'Дата начала должна быть меньше даты дедлайна'
+            });
+        }
+
+        // проверка, что даты задач не выходят за пределы дат этапа
+        if (new Date(startDate) < new Date(stage.startDate) || new Date(deadline) > new Date(stage.endDate)) {
+            return res.status(400).json({
+                message: 'Даты задачи должны быть в пределах дат этапа'
             });
         }
 
