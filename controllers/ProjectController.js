@@ -334,6 +334,78 @@ export const getAllStages = async (req, res) => {
     }
 }
 
+export const updateStage = async (req, res) => {
+    try {
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid);
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        // проверка даты: дата начала < дата конца
+        const { startDate, endDate } = req.body;
+        if (new Date(startDate) >= new Date(endDate)) {
+            return res.status(400).json({
+                message: 'Дата начала должна быть меньше даты дедлайна'
+            });
+        }
+
+        // редактирование этапа
+        const updatedTask = await StageModel.findByIdAndUpdate(
+            {_id: stage._doc._id},
+            {
+                name: req.body.name,
+                description: req.body.description,
+                startDate: req.body.startDate,
+                endDate: req.body.endDate
+            }
+        );
+
+        // получение задач, связанных с этапом
+        const tasks = await TaskModel.find({ _id: { $in: stage.tasks } });
+
+        // обновление дат задач, которые выходят за пределы новых дат этапа
+        const updatedTasksPromises = tasks.map(task => {
+            const taskStartDate = new Date(task.startDate);
+            const taskDeadline = new Date(task.deadline);
+            const newStartDate = new Date(req.body.startDate);
+            const newEndDate = new Date(req.body.endDate);
+
+            let updateFields = {};
+            if (taskStartDate < newStartDate) {
+                updateFields.startDate = newStartDate;
+            }
+            if (taskDeadline > newEndDate) {
+                updateFields.deadline = newEndDate;
+            }
+
+            // если есть поля для обновления, выполняем запрос
+            if (Object.keys(updateFields).length > 0) {
+                return TaskModel.findByIdAndUpdate(
+                    { _id: task._id },
+                    updateFields,
+                    { new: true }
+                );
+            }
+        });
+
+        await Promise.all(updatedTasksPromises);
+
+        res.json({
+            "message": "Этап обновлен"
+        });
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось редактировать этап'
+        });
+    }
+}
+
 export const createTask = async (req, res) => {
     try {
         // поиск этапа
@@ -456,6 +528,59 @@ export const deleteTask = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось удалить задачу'
+        });
+    }
+}
+
+export const updateTask = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid);
+
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid);
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        // проверка даты: дата начала < дата конца
+        const { startDate, deadline } = req.body;
+        if (new Date(startDate) >= new Date(deadline)) {
+            return res.status(400).json({
+                message: 'Дата начала должна быть меньше даты дедлайна'
+            });
+        }
+
+        // проверка, что даты задач не выходят за пределы дат этапа
+        if (new Date(startDate) < new Date(stage.startDate) || new Date(deadline) > new Date(stage.endDate)) {
+            return res.status(400).json({
+                message: 'Даты задачи должны быть в пределах дат этапа'
+            });
+        }
+
+        // редактирование задачи
+        const updatedTask = await TaskModel.findByIdAndUpdate(
+            {_id: task._doc._id},
+            {
+                name: req.body.name,
+                description: req.body.description,
+                startDate: req.body.startDate,
+                deadline: req.body.deadline
+            }
+        );
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось редактировать задачу'
         });
     }
 }

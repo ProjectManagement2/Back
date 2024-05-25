@@ -63,6 +63,10 @@ router.post('/createStage', checkAuth, checkProjLeader, ProjectController.create
 // /api/project/getAllStages
 router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 
+// редактирование этапа
+// /api/project/updateStage
+router.patch('/updateStage', checkAuth, checkProjLeader, ProjectController.updateStage);
+
 // ----------------------------------------------- ЗАДАЧИ ---------------------------------------------------
 
 // создание задачи
@@ -72,6 +76,10 @@ router.post('/createTask', checkAuth, checkProjLeader, upload.array('files'), Pr
 // удаление задачи
 // /api/project/deleteTask
 router.delete('/deleteTask', checkAuth, checkProjLeader, ProjectController.deleteTask);
+
+// редактирование задачи
+// /api/project/updateTask
+router.patch('/updateTask', checkAuth, checkProjLeader, ProjectController.updateTask);
 
 // вывод списка задач для одного этапа
 // /api/project/getAllTasks
