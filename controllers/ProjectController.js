@@ -282,12 +282,27 @@ export const createStage = async (req, res) => {
             });
         }
 
+        let isAvailable = true;
+        
+        // проверка связанного этапа
+        if (req.body.relatedStage) {
+            const relatedStageDoc = await StageModel.findById(req.body.relatedStage);
+            if (!relatedStageDoc) {
+                return res.status(404).json({
+                    message: 'Связанный этап не найден'
+                });
+            }
+            isAvailable = relatedStageDoc.isDone;
+        }
+
         // создание этапа
         const doc = new StageModel({
             name: req.body.name,
             description: req.body.description,
             startDate: req.body.startDate,
-            endDate: req.body.endDate
+            endDate: req.body.endDate,
+            isAvailable: isAvailable,
+            relatedStage: req.body.relatedStage
         });
         const stage = await doc.save();
 
@@ -315,7 +330,7 @@ export const getAllStages = async (req, res) => {
         const project = await ProjectModel.findById(req.headers.projectid).select('stages')
         .populate({
             path: 'stages',
-            select: 'name description',
+            select: 'name description isDone isAvailable',
         });
 
         if (!project) {
@@ -406,6 +421,70 @@ export const updateStage = async (req, res) => {
     }
 }
 
+export const updateStageStatus = async (req, res) => {
+    try {
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid);
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        // изменение статуса этапа
+        const updatedStage = await StageModel.findByIdAndUpdate(
+            {_id: stage._doc._id},
+            {
+                isDone: req.body.isDone
+            }
+        );
+
+        // Найти этапы, зависящие от текущего этапа
+        const dependentStages = await StageModel.find({ relatedStage: stage._id });
+
+        if (req.body.isDone) {
+            // обновить статус доступности зависимых этапов и их задач, если текущий этап завершен
+            for (const dependentStage of dependentStages) {
+                await StageModel.findByIdAndUpdate(
+                    dependentStage._id,
+                    { isAvailable: true }
+                );
+
+                // обновить статус задач в зависимом этапе
+                await TaskModel.updateMany(
+                    { _id: { $in: dependentStage.tasks } },
+                    { status: "Новая" }
+                );
+            }
+        } else {
+            // Обновить статус доступности зависимых этапов и их задач, если текущий этап не завершен
+            for (const dependentStage of dependentStages) {
+                await StageModel.findByIdAndUpdate(
+                    dependentStage._id,
+                    { isAvailable: false }
+                );
+
+                // обновить статус задач в зависимом этапе
+                await TaskModel.updateMany(
+                    { _id: { $in: dependentStage.tasks } },
+                    { status: "Недоступна" }
+                );
+            }
+        }
+
+        res.json({
+            message: 'Статус этапа обновлён'
+        });
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось обновить статус этапа'
+        });
+    }
+}
+
 export const createTask = async (req, res) => {
     try {
         // поиск этапа
@@ -446,12 +525,18 @@ export const createTask = async (req, res) => {
             });
         }
 
+        let status = "Новая"
+        if (!stage._doc.isAvailable) {
+            status = "Недоступна"
+        }
+
         // создание задачи
         const doc = new TaskModel({
             name: req.body.name,
             description: req.body.description,
             startDate: req.body.startDate,
             deadline: req.body.deadline,
+            status: status,
             isImportant: req.body.isImportant,
             tags: req.body.tags,
             worker: req.body.worker,

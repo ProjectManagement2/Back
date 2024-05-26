@@ -67,6 +67,10 @@ router.get('/getAllStages', checkAuth, ProjectController.getAllStages);
 // /api/project/updateStage
 router.patch('/updateStage', checkAuth, checkProjLeader, ProjectController.updateStage);
 
+// изменение статуса isDone
+// /api/project/updateStageStatus
+router.patch('/updateStageStatus', checkAuth, checkProjLeader, ProjectController.updateStageStatus);
+
 // ----------------------------------------------- ЗАДАЧИ ---------------------------------------------------
 
 // создание задачи
