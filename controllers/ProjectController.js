@@ -284,6 +284,9 @@ export const createStage = async (req, res) => {
 
         let isAvailable = true;
         
+        if (req.body.relatedStage == '') {
+            req.body.relatedStage = null;
+        }
         // проверка связанного этапа
         if (req.body.relatedStage) {
             const relatedStageDoc = await StageModel.findById(req.body.relatedStage);
@@ -330,7 +333,7 @@ export const getAllStages = async (req, res) => {
         const project = await ProjectModel.findById(req.headers.projectid).select('stages')
         .populate({
             path: 'stages',
-            select: 'name description isDone isAvailable',
+            select: 'name description isDone isAvailable startDate endDate',
         });
 
         if (!project) {
