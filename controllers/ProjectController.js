@@ -424,6 +424,56 @@ export const updateStage = async (req, res) => {
     }
 }
 
+export const moveStage = async (req, res) => {
+    try {
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid);
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        const { days } = req.body;
+
+        if (!days || isNaN(days)) {
+            return res.status(400).json({ message: 'Количество дней должно быть числом' });
+        }
+
+        // функция для сдвига даты
+        const shiftDates = (date, days) => {
+            const result = new Date(date);
+            result.setDate(result.getDate() + parseInt(days));
+            return result;
+        };
+
+        // сдвиг дат этапа
+        stage.startDate = shiftDates(stage.startDate, days);
+        stage.endDate = shiftDates(stage.endDate, days);
+
+        await stage.save();
+
+        // сдвиг дат всех задач, связанных с этим этапом
+        const tasks = await TaskModel.find({ _id: { $in: stage.tasks } });
+
+        for (let task of tasks) {
+            task.startDate = shiftDates(task.startDate, days);
+            task.deadline = shiftDates(task.deadline, days);
+            await task.save();
+        }
+
+        res.json({
+            message: 'Даты успешно сдвинуты'
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось сдвинуть этап'
+        });
+    }
+}
+
 export const updateStageStatus = async (req, res) => {
     try {
         // поиск этапа

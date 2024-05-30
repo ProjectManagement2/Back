@@ -3,7 +3,6 @@ import ProjectModel from '../models/Project.js';
 
 
 export default async (req, res, next) => {
-
     // поиск проекта
     const project = await ProjectModel.findById(req.headers.projectid);
     if (!project) {
