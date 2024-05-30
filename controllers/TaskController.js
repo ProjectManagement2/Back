@@ -2,6 +2,7 @@ import TaskModel from '../models/Task.js';
 import SolutionModel from '../models/Solution.js';
 import ChatModel from '../models/Chat.js';
 import MessageModel from '../models/Message.js';
+import CommentModel from '../models/Comment.js';
 
 export const taskInfo = async (req, res) => {
     try {
@@ -155,6 +156,66 @@ export const updateSolution = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось добавить решение задачи'
+        });
+    }
+}
+
+export const createComment = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid);
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        // изменение статуса задачи
+        const updatedTask = await TaskModel.findByIdAndUpdate(
+            {_id: task._doc._id},
+            {
+                status: req.body.status
+            }
+        );
+
+        // создание комментария
+        const doc = new CommentModel({
+            task: task._doc._id,
+            text: req.body.text
+        });
+        const comment = await doc.save();
+
+        res.json({
+            message: "Добавлен комментарий к задаче и изменен статус"
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось добавить комментарий к задаче'
+        });
+    }
+}
+
+export const getComments = async (req, res) => {
+    try {
+        // поиск задачи
+        const task = await TaskModel.findById(req.headers.taskid);
+        if (!task) {
+            return res.status(404).json({
+                message: 'Задача не найдена'
+            });
+        }
+
+        // поиск комментариев
+        const comments = await CommentModel.find({ task: task._doc._id }).select('text');
+
+        res.json(comments);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить все комментарии'
         });
     }
 }

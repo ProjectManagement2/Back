@@ -3,7 +3,7 @@ import multer from "multer";
 
 import * as TaskController from '../controllers/TaskController.js';
 import checkAuth from '../utils/checkAuth.js';
-import Task from "../models/Task.js";
+import checkProjLeader from "../utils/checkProjLeader.js";
 
 // настройка multer для сохранения файлов в определенную директорию
 const storage = multer.diskStorage({
@@ -34,5 +34,15 @@ router.patch('/changeStatus', checkAuth, TaskController.changeStatus);
 // обновление решения задачи
 // /api/task/updateSolution
 router.patch('/updateSolution', checkAuth, upload.array('files'), TaskController.updateSolution);
+
+// ----------------------------------------- КОММЕНТАРИИ -----------------------------------------------
+
+// добавление комментария к задаче
+// /api/task/createComment
+router.post('/createComment', checkAuth, checkProjLeader, TaskController.createComment);
+
+// вывод всех комментариев
+// /api/task/getComments
+router.get('/getComments', checkAuth, TaskController.getComments);
 
 export default router;
