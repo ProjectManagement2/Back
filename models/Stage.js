@@ -17,19 +17,6 @@ const StageSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    isDone: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
-    isAvailable: {
-        type: Boolean,
-        required: true,
-    },
-    relatedStage: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Stage'
-    },
     tasks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'

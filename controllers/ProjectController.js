@@ -282,30 +282,12 @@ export const createStage = async (req, res) => {
             });
         }
 
-        let isAvailable = true;
-        
-        if (req.body.relatedStage == '') {
-            req.body.relatedStage = null;
-        }
-        // проверка связанного этапа
-        if (req.body.relatedStage) {
-            const relatedStageDoc = await StageModel.findById(req.body.relatedStage);
-            if (!relatedStageDoc) {
-                return res.status(404).json({
-                    message: 'Связанный этап не найден'
-                });
-            }
-            isAvailable = relatedStageDoc.isDone;
-        }
-
         // создание этапа
         const doc = new StageModel({
             name: req.body.name,
             description: req.body.description,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
-            isAvailable: isAvailable,
-            relatedStage: req.body.relatedStage
         });
         const stage = await doc.save();
 
@@ -514,7 +496,9 @@ export const updateStageStatus = async (req, res) => {
             for (const dependentStage of dependentStages) {
                 await StageModel.findByIdAndUpdate(
                     dependentStage._id,
-                    { isAvailable: false }
+                    { isAvailable: false,
+                        isDone: false
+                    }
                 );
 
                 // обновить статус задач в зависимом этапе
@@ -534,6 +518,42 @@ export const updateStageStatus = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось обновить статус этапа'
+        });
+    }
+}
+
+export const deleteStage = async (req, res) => {
+    try {
+        // поиск этапа
+        const stage = await StageModel.findById(req.headers.stageid);
+        if (!stage) {
+            return res.status(404).json({
+                message: 'Этап не найден'
+            });
+        }
+
+        // проект, к которому принадлежит удаляемый этап
+        const project = await ProjectModel.findOne({ stages: req.headers.stageid });
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+        // удалить ID этапа из массива этапов проекта
+        project.stages.pull(req.headers.stageid);
+        await project.save();
+        
+        // удаление этапа
+        await StageModel.deleteOne({ _id: stage._doc._id });
+
+        res.json({
+            message: "Этап удален"
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить задачу'
         });
     }
 }
@@ -578,9 +598,22 @@ export const createTask = async (req, res) => {
             });
         }
 
-        let status = "Новая"
-        if (!stage._doc.isAvailable) {
-            status = "Недоступна"
+        if (req.body.relatedTask == '') {
+            req.body.relatedTask = null
+        }
+
+        // проверка связанной задачи
+        let status = "Новая";
+        if (req.body.relatedTask) {
+            const relatedTask = await TaskModel.findById(req.body.relatedTask);
+            if (!relatedTask) {
+                return res.status(404).json({
+                    message: 'Связанная задача не найдена'
+                });
+            }
+            if (relatedTask.status !== "Утверждена") {
+                status = "Недоступна";
+            }
         }
 
         // создание задачи
@@ -590,6 +623,7 @@ export const createTask = async (req, res) => {
             startDate: req.body.startDate,
             deadline: req.body.deadline,
             status: status,
+            relatedTask: req.body.relatedTask,
             isImportant: req.body.isImportant,
             tags: req.body.tags,
             worker: req.body.worker,
@@ -765,7 +799,7 @@ export const getCalendarTasks = async (req, res) => {
 
         // для каждого этапа получить список задач и добавить их в общий список
         for (const stage of stages) {
-            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate worker')
+            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate worker status')
             .populate({
                 path: 'worker',
                 select: 'surname name otch'

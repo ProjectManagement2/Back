@@ -73,7 +73,11 @@ router.patch('/moveStage', checkAuth, checkProjLeader, ProjectController.moveSta
 
 // изменение статуса isDone
 // /api/project/updateStageStatus
-router.patch('/updateStageStatus', checkAuth, checkProjLeader, ProjectController.updateStageStatus);
+// router.patch('/updateStageStatus', checkAuth, checkProjLeader, ProjectController.updateStageStatus);
+
+// удаление этапа
+// /api/project/deleteStage
+router.delete('/deleteStage', checkAuth, checkProjLeader, ProjectController.deleteStage);
 
 // ----------------------------------------------- ЗАДАЧИ ---------------------------------------------------
 

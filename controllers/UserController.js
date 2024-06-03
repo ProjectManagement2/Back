@@ -164,7 +164,7 @@ export const userTasks = async (req, res) => {
         const user = await UserModel.findById(req.userId)
         .populate({
             path: 'tasks',
-            select: 'name description deadline isImportant status tags project',
+            select: 'name description startDate deadline isImportant status tags project',
             populate: {
                 path: 'project',
                 select: 'name'

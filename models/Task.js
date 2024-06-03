@@ -22,6 +22,10 @@ const TaskSchema = new mongoose.Schema({
         type: String,
         default: "Новая"
     },
+    relatedTask: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Task'
+    },
     isImportant: {
         type: Boolean,
         default: false

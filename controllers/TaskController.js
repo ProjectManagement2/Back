@@ -178,15 +178,30 @@ export const createComment = async (req, res) => {
             }
         );
 
-        // создание комментария
-        const doc = new CommentModel({
-            task: task._doc._id,
-            text: req.body.text
-        });
-        const comment = await doc.save();
+        // изменение статуса всех задач, которые зависят от этой задачи, на "Новая"
+        if (req.body.status === "Утверждена") {
+            await TaskModel.updateMany(
+                { relatedTask: updatedTask._id },
+                { status: "Новая" }
+            ).exec();
+        } else if (req.body.status !== "Утверждена") {
+            await TaskModel.updateMany(
+                { relatedTask: updatedTask._id },
+                { status: "Недоступна" }
+            ).exec();
+        }
 
+        // создание комментария, если он есть
+        if (req.body.text) {
+            const doc = new CommentModel({
+                task: task._doc._id,
+                text: req.body.text
+            });
+            const comment = await doc.save();
+        }
+        
         res.json({
-            message: "Добавлен комментарий к задаче и изменен статус"
+            message: "Добавлен комментарий к задаче и/или изменен статус"
         });
     }
     catch (err) {
