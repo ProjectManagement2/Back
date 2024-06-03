@@ -799,7 +799,7 @@ export const getCalendarTasks = async (req, res) => {
 
         // для каждого этапа получить список задач и добавить их в общий список
         for (const stage of stages) {
-            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate worker status')
+            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate relatedTask worker status')
             .populate({
                 path: 'worker',
                 select: 'surname name otch'
@@ -845,6 +845,7 @@ export const statistics = async (req, res) => {
             statusNew: 0,
             statusInProcess: 0,
             statusDone: 0,
+            statusUnavailable: 0
         };
 
         let totalTasks = 0;
@@ -872,6 +873,8 @@ export const statistics = async (req, res) => {
                     taskStatusCount.statusInProcess++;
                 } else if (task.status === 'Завершена') {
                     taskStatusCount.statusDone++;
+                } else if (task.status === 'Недоступна') {
+                    taskStatusCount.statusUnavailable++;
                 }
 
                 // Подсчет важных задач
