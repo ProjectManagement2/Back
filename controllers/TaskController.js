@@ -100,6 +100,13 @@ export const updateSolution = async (req, res) => {
             });
         }
 
+        // проверка статуса задачи
+        if (task.status === "Недоступна") {
+            return res.status(403).json({
+                message: 'Нельзя добавить решение к задаче со статусом "Недоступна"'
+            });
+        }
+
         // проверка права на добавление решения
         if (task._doc.worker != req.userId) {
             return res.status(404).json({
