@@ -69,6 +69,35 @@ export const mainInfo = async (req, res) => {
     }
 }
 
+export const getProjectMembers = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // все задачи, связанные с проектом
+        const tasks = await TaskModel.find({ project: project._id });
+
+        // ID пользователей, выполняющих задачи
+        const userIds = [...new Set(tasks.map(task => task.worker).filter(worker => worker !== null))];
+
+        // поиск пользователей по их ID
+        const users = await UserModel.find({ _id: { $in: userIds } }).select('surname name otch');
+
+        res.json(users);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить список участников проекта'
+        });
+    }
+}
+
 export const getProjectLeaders = async (req, res) => {
     try {
         // поиск проекта

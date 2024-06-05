@@ -25,6 +25,10 @@ const router = new Router();
 // /api/project/mainInfo
 router.get('/mainInfo', checkAuth, ProjectController.mainInfo);
 
+// получение списка людей, работающих над проектом
+// /api/project/getProjectMembers
+router.get('/getProjectMembers', checkAuth, ProjectController.getProjectMembers);
+
 // ------------------------------------- РУКОВОДИТЕЛИ ПРОЕКТА -----------------------------------------
 
 // получение списка руководителей проекта
