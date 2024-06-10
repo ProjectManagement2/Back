@@ -25,4 +25,8 @@ router.get('/getUsers', checkAuth, AdminController.getAllUsers);
 // /api/admin/updateOrganization
 router.patch('/updateOrganization', checkAuth, AdminController.updateOrganization);
 
+// удаление организации
+// /api/admin/deleteOrganization
+router.delete('/deleteOrganization', checkAuth, AdminController.deleteOrganization);
+
 export default router;

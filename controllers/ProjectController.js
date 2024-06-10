@@ -214,6 +214,7 @@ export const addMessage = async (req, res) => {
         const doc = new MessageModel({
             text: req.body.text,
             author: req.userId,
+            type: 'Сообщение'
         });
         const message = await doc.save();
 
@@ -241,7 +242,7 @@ export const getMessages = async (req, res) => {
         const chat = await ChatModel.findOne({project: req.headers.projectid}).select('messages')
         .populate({
             path: 'messages',
-            select: 'text author timestamp',
+            select: 'text author timestamp type',
             populate: {
                 path: 'author',
                 select: 'surname name otch'

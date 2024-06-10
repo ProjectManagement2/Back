@@ -149,3 +149,33 @@ export const updateOrganization = async (req, res) => {
         });
     }
 }
+
+export const deleteOrganization = async (req, res) => {
+    try {
+        const organizationId = req.headers.organizationid;
+
+        // поиск организации
+        const organization = await OrganizationModel.findById(organizationId);
+        if (!organization) {
+            return res.status(404).json({ message: 'Организация не найдена' });
+        }
+
+        // удаление организации из списков пользователей
+        await UserModel.updateMany(
+            { organizations: organizationId },
+            { $pull: { organizations: organizationId } }
+        ).exec();
+
+        await OrganizationModel.findByIdAndDelete(organizationId);
+
+        res.json({
+            message: 'Организация удалена'
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить организацию'
+        });
+    }
+}

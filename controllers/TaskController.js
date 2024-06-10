@@ -146,6 +146,7 @@ export const updateSolution = async (req, res) => {
         const doc = new MessageModel({
             text: 'Обновлен отчет по задаче: ' + task._doc.name,
             author: req.userId,
+            type: 'Уведомление'
         });
         const message = await doc.save();
 
