@@ -98,6 +98,37 @@ export const getProjectMembers = async (req, res) => {
     }
 }
 
+export const updateProject = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // редактирование проекта
+        const updatedProject = await ProjectModel.findByIdAndUpdate(
+            {_id: project._doc._id},
+            {
+                name: req.body.name,
+                description: req.body.description
+            }
+        );
+
+        res.json({
+            "message": "Проект обновлен"
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось редактировать проект'
+        });
+    }
+}
+
 export const getProjectLeaders = async (req, res) => {
     try {
         // поиск проекта

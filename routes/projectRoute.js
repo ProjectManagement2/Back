@@ -29,6 +29,10 @@ router.get('/mainInfo', checkAuth, ProjectController.mainInfo);
 // /api/project/getProjectMembers
 router.get('/getProjectMembers', checkAuth, ProjectController.getProjectMembers);
 
+// редактирование проекта
+// /api/project/updateProject
+router.patch('/updateProject', checkAuth, checkProjLeader, ProjectController.updateProject);
+
 // ------------------------------------- РУКОВОДИТЕЛИ ПРОЕКТА -----------------------------------------
 
 // получение списка руководителей проекта
