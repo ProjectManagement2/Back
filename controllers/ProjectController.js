@@ -767,6 +767,7 @@ export const deleteTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
     try {
+        console.log(req.body);
         // поиск задачи
         const task = await TaskModel.findById(req.headers.taskid);
 
@@ -808,7 +809,11 @@ export const updateTask = async (req, res) => {
                 startDate: req.body.startDate,
                 deadline: req.body.deadline
             }
-        );
+        ).exec();
+
+        return res.json({
+            message: "Задача обновлена"
+        });
     }
     catch (err) {
         console.log(err);

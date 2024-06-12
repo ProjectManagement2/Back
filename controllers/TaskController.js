@@ -231,7 +231,7 @@ export const getComments = async (req, res) => {
         }
 
         // поиск комментариев
-        const comments = await CommentModel.find({ task: task._doc._id }).select('text');
+        const comments = await CommentModel.find({ task: task._doc._id }).select('text createdAt');
 
         res.json(comments);
     }
