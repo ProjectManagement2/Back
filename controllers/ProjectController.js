@@ -245,7 +245,8 @@ export const addMessage = async (req, res) => {
         const doc = new MessageModel({
             text: req.body.text,
             author: req.userId,
-            type: 'Сообщение'
+            type: 'Сообщение',
+            stage: req.body.stage
         });
         const message = await doc.save();
 
@@ -689,6 +690,7 @@ export const createTask = async (req, res) => {
             tags: req.body.tags,
             worker: req.body.worker,
             project: project._doc._id,
+            stage: stage._doc._id,
             files: filesArray // Сохраняем имена или пути к файлам
         });
         const task = await doc.save();
@@ -865,7 +867,7 @@ export const getCalendarTasks = async (req, res) => {
 
         // для каждого этапа получить список задач и добавить их в общий список
         for (const stage of stages) {
-            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate relatedTask worker status')
+            const tasks = await TaskModel.find({ _id: { $in: stage.tasks } }).select('name startDate deadline createdDate relatedTask worker status solution stage')
             .populate({
                 path: 'worker',
                 select: 'surname name otch'

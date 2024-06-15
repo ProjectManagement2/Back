@@ -39,6 +39,10 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project'
     },
+    stage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Stage'
+    },
     files: [{
         type: String,
     }],

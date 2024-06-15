@@ -124,6 +124,7 @@ export const userOrganizations = async (req, res) => {
 
 export const updateUserInfo = async (req, res) => {
     try {
+        console.log(req.body);
         //проверка валидации
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

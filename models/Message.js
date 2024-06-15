@@ -17,6 +17,10 @@ const MessageSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true
+    },
+    stage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Stage",
     }
 });
 

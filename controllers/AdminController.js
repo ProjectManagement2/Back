@@ -133,13 +133,21 @@ export const getAllUsers = async (req, res) => {
 
 export const updateOrganization = async (req, res) => {
     try {
+        // поиск организации
+        const organization = await OrganizationModel.findById(req.headers.organizationid);
+        if (!organization) {
+            return res.status(404).json({
+                message: 'Организация не найдена'
+            });
+        }
+
         const updatedOrganization = await OrganizationModel.findByIdAndUpdate(
-            {_id: req.body.organizationId},
+            {_id: organization._doc._id},
             {
                 name: req.body.name,
                 description: req.body.description
             }
-        );
+        ).exec();
         res.json({message: 'Данные обновлены'});
     }
     catch (err) {

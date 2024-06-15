@@ -126,6 +126,7 @@ export const updateSolution = async (req, res) => {
         const updatedTask = await TaskModel.findByIdAndUpdate(
             {_id: task._doc._id},
             {
+                status: 'Завершена',
                 solution: {
                     text: req.body.text,
                     files: filesArray // сохраняем имена или пути к файлам
@@ -146,7 +147,8 @@ export const updateSolution = async (req, res) => {
         const doc = new MessageModel({
             text: 'Обновлен отчет по задаче: ' + task._doc.name,
             author: req.userId,
-            type: 'Уведомление'
+            type: 'Уведомление',
+            stage: task._doc._id
         });
         const message = await doc.save();
 
