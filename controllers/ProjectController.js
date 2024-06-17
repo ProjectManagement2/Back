@@ -656,7 +656,7 @@ export const createTask = async (req, res) => {
         // проверка, что даты задач не выходят за пределы дат этапа
         if (new Date(startDate) < new Date(stage.startDate) || new Date(deadline) > new Date(stage.endDate)) {
             return res.status(400).json({
-                message: 'Даты задачи должны быть в пределах дат этапа'
+                message: 'Даты задачи должны быть в пределах дат этапа' + stage._doc.startDate + ' - ' + stage._doc.endDate
             });
         }
 
@@ -871,6 +871,10 @@ export const getCalendarTasks = async (req, res) => {
             .populate({
                 path: 'worker',
                 select: 'surname name otch'
+            })
+            .populate({
+                path: 'stage',
+                select: 'name'
             }).exec();
             allTasks = allTasks.concat(tasks);
         }
