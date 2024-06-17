@@ -21,6 +21,10 @@ router.post('/createProject', checkAuth, checkOrgLeader, OrganizationController.
 // /api/organization/getProjects
 router.get('/getProjects', checkAuth, OrganizationController.getProjects);
 
+// удаление проекта
+// /api/organization/deleteProject
+router.delete('/deleteProject', checkAuth, checkOrgLeader, OrganizationController.deleteProject);
+
 // --------------------------------------- УЧАСТНИКИ ОРГАНИЗАЦИИ -----------------------------------------
 
 // добавление пользователя в организацию

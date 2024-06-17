@@ -110,6 +110,36 @@ export const getProjects = async (req, res) => {
     return res.json(projects);
 }
 
+export const deleteProject = async (req, res) => {
+    try {
+        // поиск проекта
+        const project = await ProjectModel.findById(req.headers.projectid);
+        if (!project) {
+            return res.status(404).json({
+                message: 'Проект не найден'
+            });
+        }
+
+        // удаление проекта из списка организаций
+        await OrganizationModel.updateMany(
+            { projects: project._doc._id },
+            { $pull: { projects: project._doc._id } }
+        ).exec();
+
+        await ProjectModel.findByIdAndDelete(project._doc._id);
+
+        res.json({
+            message: 'Проект удален'
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить проект'
+        });
+    }
+}
+
 export const addUser = async (req, res) => {
     try {
         // поиск добавляемого пользователя
